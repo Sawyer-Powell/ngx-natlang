@@ -7,7 +7,8 @@ export type ComponentCreate = {
     inputs?: {
         name: string,
         value: any,
-    }[]
+    }[],
+    index?: number
 }
 
 export type PromptLockUpdate = {

@@ -27,7 +27,8 @@ export class ChatHandler {
       messages: ChatCompletionRequestMessage[],
       schemas: ChatCompletionFunctions[]
     ) => Promise<ChatCompletionResponseMessage | undefined>,
-    actions: Array<new (ai_chat_service: ChatService) => Action<any>> = []
+    actions: Array<new (ai_chat_service: ChatService) => Action<any>> = [],
+    private prepend?: boolean
   ) {
     ai_chat_service.component_emitter.subscribe((component) => {
       this.render_component(component);
@@ -93,7 +94,8 @@ export class ChatHandler {
       inputs: [{
         name: 'content',
         value: content
-      }]
+      }],
+      index: this.prepend ? 0 : undefined 
     });
   }
 
@@ -103,7 +105,8 @@ export class ChatHandler {
       inputs: [{
         name: 'content',
         value: content
-      }]
+      }],
+      index: this.prepend ? 0 : undefined
     });
   }
 
@@ -170,8 +173,13 @@ export class ChatHandler {
     }
   }
 
-  render_component(component: ComponentCreate) {
-    const created_component = this.ai_chat_window.createComponent(component.component);
+  render_component(component: ComponentCreate, index?: number) {
+    const created_component = this.ai_chat_window.createComponent(
+      component.component,
+      {
+        index: index ? index : (this.prepend ? 0 : undefined)
+      }
+    );
 
     if (component.inputs) {
       component.inputs.forEach(input => {
