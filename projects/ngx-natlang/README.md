@@ -1,5 +1,5 @@
 # Natural Language Interface (NLI)
-### A library for building AI chat experiences in Angular 🤖
+### A library for building AI chat experiences in Angular 16 🤖
 
 <img src="https://static.vecteezy.com/system/resources/previews/010/403/281/original/simple-drawing-in-doodle-style-robot-cute-robot-hand-drawn-with-lines-funny-illustration-for-kids-free-vector.jpg"
 style="width: 300px">
@@ -9,7 +9,7 @@ style="width: 300px">
 Inside your angular application, install the package with npm
 
 ```bash
-npm i https://bitbucket.org/counterpart-biz/chatgpt-angular-code/src/master/?search_id=71bcd825-ecc6-4c53-a72b-23049e9a02a0
+npm i ngx-natural-language
 ```
 
 ## Overview and Setup
