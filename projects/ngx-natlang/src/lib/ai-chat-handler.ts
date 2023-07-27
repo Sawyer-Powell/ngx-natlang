@@ -15,11 +15,11 @@ import { Action } from "./action";
 export class ChatHandler {
   private chat_history: ChatCompletionRequestMessage[] = [];
   private action_objects: Action<any>[];
+  private prompt_lock: PromptLock = {locked: false};
 
   constructor(
     private ai_chat_service: ChatService,
     private cdr: ChangeDetectorRef,
-    private prompt_lock: PromptLock,
     private ai_chat_window: ViewContainerRef,
     private human_message_component: any,
     private ai_message_component: any,
@@ -28,15 +28,19 @@ export class ChatHandler {
       schemas: ChatCompletionFunctions[]
     ) => Promise<ChatCompletionResponseMessage | undefined>,
     actions: Array<new (ai_chat_service: ChatService) => Action<any>> = [],
-    private prepend?: boolean
+    private prepend?: boolean,
+    prompt_lock?: PromptLock,
   ) {
     ai_chat_service.component_emitter.subscribe((component) => {
       this.render_component(component);
     });
 
-    ai_chat_service.prompt_lock_emitter.subscribe((lock) => {
-      this.prompt_lock.locked = lock.locked;
-    });
+    if (prompt_lock) {
+      this.prompt_lock = prompt_lock;
+      ai_chat_service.prompt_lock_emitter.subscribe((lock) => {
+        this.prompt_lock.locked = lock.locked;
+      });
+    }
 
     ai_chat_service.prompt_emitter.subscribe((prompt) => {
       console.log("received prompt");
