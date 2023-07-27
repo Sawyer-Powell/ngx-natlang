@@ -2,8 +2,8 @@
   "name": "ngx-natural-language",
   "version": "0.0.2",
   "peerDependencies": {
-    "@angular/common": "^14.1.0",
-    "@angular/core": "^14.1.0",
+    "@angular/common": "^16.1.0",
+    "@angular/core": "^16.1.0",
     "openai": "^3.3.0"
   },
   "dependencies": {
