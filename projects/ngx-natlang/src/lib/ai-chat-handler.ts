@@ -31,6 +31,10 @@ export class ChatHandler {
     private prepend?: boolean,
     prompt_lock?: PromptLock,
   ) {
+    if(this.ai_chat_window == undefined) {
+      throw Error("Chat window is undefined at the moment of ChatHandler initialization. Are you sure chat window's ViewContainer is rendered at this point?")
+    }
+
     ai_chat_service.component_emitter.subscribe((component) => {
       this.render_component(component);
     });
