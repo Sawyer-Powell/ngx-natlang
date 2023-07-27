@@ -1,0 +1,19 @@
+{
+  "name": "ngx-natural-language",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@angular/common": "^14.1.0",
+    "@angular/core": "^14.1.0",
+    "openai": "^3.3.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0",
+    "typescript-json-schema": "^0.59.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.4.2"
+  },
+  "bin": {
+    "schema": "./bin/make_schema.js"
+  }
+}

@@ -3,5 +3,36 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
+    "ngx-natlang": {
+      "projectType": "library",
+      "root": "projects/ngx-natlang",
+      "sourceRoot": "projects/ngx-natlang/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:ng-packagr",
+          "options": {
+            "project": "projects/ngx-natlang/ng-package.json"
+          },
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/ngx-natlang/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/ngx-natlang/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/ngx-natlang/src/test.ts",
+            "tsConfig": "projects/ngx-natlang/tsconfig.spec.json",
+            "karmaConfig": "projects/ngx-natlang/karma.conf.js"
+          }
+        }
+      }
+    }
   }
 }
