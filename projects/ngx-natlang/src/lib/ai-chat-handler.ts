@@ -198,7 +198,10 @@ export class ChatHandler {
       response.function_call.arguments !== undefined
     ) {
       let data = JSON.parse(response.function_call.arguments);
-      this.save_system_message(await action.run(data));
+      let action_result = await action.run(data);
+      if(action_result) {
+        this.save_system_message(action_result);
+      }
     }
   }
 
