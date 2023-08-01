@@ -2,15 +2,22 @@ import {
   ChangeDetectorRef,
   ViewContainerRef
 } from "@angular/core";
+
 import {
   ChatService,
   ComponentCreate,
   ProcessPrompt
 } from "./services/aichat-service.service";
-import { ChatCompletionFunctions, ChatCompletionRequestMessage, ChatCompletionResponseMessage } from 'openai/dist/api';
-import { PromptLock } from "./base.classes";
-import { Action } from "./action";
 
+import {
+  ChatCompletionFunctions,
+  ChatCompletionRequestMessage,
+  ChatCompletionResponseMessage
+} from 'openai/dist/api';
+
+import { PromptLock } from "./base.classes";
+
+import { Action } from "./action";
 
 export class ChatHandler {
   private chat_history: ChatCompletionRequestMessage[] = [];
@@ -29,27 +36,29 @@ export class ChatHandler {
     ) => Promise<ChatCompletionResponseMessage | undefined>,
     actions: Array<new (ai_chat_service: ChatService) => Action<any>> = [],
     private prepend?: boolean,
-    prompt_lock?: PromptLock,
   ) {
     if(this.ai_chat_window == undefined) {
-      throw Error("Chat window is undefined at the moment of ChatHandler initialization. Are you sure chat window's ViewContainer is rendered at this point?")
+      throw Error(
+        `Chat window is undefined at the moment of ChatHandler initialization.\
+        Are you sure chat window's ViewContainer is rendered at this point?`
+      )
     }
 
     ai_chat_service.component_emitter.subscribe((component) => {
       this.render_component(component);
     });
 
-    if (prompt_lock) {
-      this.prompt_lock = prompt_lock;
-      ai_chat_service.prompt_lock_emitter.subscribe((lock) => {
-        this.prompt_lock.locked = lock.locked;
-      });
-    }
-
     ai_chat_service.prompt_emitter.subscribe((prompt) => {
-      console.log("received prompt");
       this.process_prompt(prompt);
     });
+
+    ai_chat_service.give_context_emitter.subscribe((context) => {
+      this.system_prompt(context, false);
+    })
+
+    ai_chat_service.system_prompt_emitter.subscribe((prompt) => {
+      this.system_prompt(prompt, true)
+    })
 
     ai_chat_service.general_emitter.subscribe((message) => {
       switch (message.message) {
@@ -65,6 +74,26 @@ export class ChatHandler {
     this.action_objects = actions.map(
       action => (new action(this.ai_chat_service))
     );
+  }
+
+  async system_prompt(content: string, with_response: boolean) {
+    this.save_system_message(content);
+
+    if(with_response) {
+      this.ai_chat_service.start_loading();
+      let response = await this.get_ai_response(
+        this.chat_history,
+        []
+      );
+
+      this.ai_chat_service.response_emitter.emit(response);
+      this.ai_chat_service.end_loading();
+
+      if (response && response.content) {
+        this.render_ai_message(response.content);
+        this.save_ai_message(response.content);
+      }
+    }
   }
 
   save_ai_message(content: string) {
@@ -103,7 +132,7 @@ export class ChatHandler {
         name: 'content',
         value: content
       }],
-      index: this.prepend ? 0 : undefined 
+      index: this.prepend ? 0 : undefined
     });
   }
 
@@ -119,31 +148,33 @@ export class ChatHandler {
   }
 
   async process_prompt(prompt: ProcessPrompt) {
-    let schemas: ChatCompletionFunctions[] = [];
+    let schemas: ChatCompletionFunctions[];
 
-    // Get the schemas from the actions associated with this handler
-    this.action_objects.forEach(action => {
-      if (action.schema) {
-        schemas.push(action.schema);
-      }
-    });
+    if(prompt.schemas) {
+      schemas = prompt.schemas;
+    } else {
+      schemas = [];
+      this.action_objects.forEach(action => {
+        if (action.schema) {
+          schemas.push(action.schema);
+        }
+      });
+    }
 
     let prompt_text: string = prompt.prompt;
 
-    this.render_component({
-      component: this.human_message_component,
-      inputs: [{
-        name: 'content',
-        value: prompt_text
-      }]
-    });
-
+    this.render_human_message(prompt_text);
     this.save_human_message(prompt_text);
+
+    this.ai_chat_service.start_loading();
 
     let response = await this.get_ai_response(
       this.chat_history,
       schemas
     );
+
+    this.ai_chat_service.response_emitter.emit(response);
+    this.ai_chat_service.end_loading();
 
     let action = this.action_objects.find(x => {
       if (x.schema === undefined) {
@@ -153,31 +184,21 @@ export class ChatHandler {
       }
     });
 
-    if (action === undefined &&
+    if (
+      action === undefined &&
       response !== undefined &&
-      response.content !== undefined) {
-      this.render_component({
-        component: this.ai_message_component,
-        inputs: [{
-          name: 'content',
-          value: response.content
-        }]
-      });
+      response.content !== undefined
+    ) {
+      this.render_ai_message(response.content);
       this.save_ai_message(response.content);
-    } else if (action !== undefined &&
+    } else if (
+      action !== undefined &&
       response !== undefined &&
       response.function_call !== undefined &&
-      response.function_call.arguments !== undefined) {
+      response.function_call.arguments !== undefined
+    ) {
       let data = JSON.parse(response.function_call.arguments);
       this.save_system_message(await action.run(data));
-      response = await this.get_ai_response(
-        this.chat_history,
-        schemas
-      );
-      if (response && response.content) {
-        this.render_ai_message(response.content);
-        this.save_ai_message(response.content);
-      }
     }
   }
 

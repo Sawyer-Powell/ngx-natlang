@@ -4,7 +4,6 @@ import {
 } from "./services/aichat-service.service";
 import { ChatCompletionFunctions } from 'openai/dist/api';
 
-
 export abstract class Action<T> {
   abstract description: string;
   abstract schema: ChatCompletionFunctions | undefined;
@@ -22,12 +21,16 @@ export abstract class Action<T> {
     return a.run();
   }
 
-  unlock_prompt(): void {
-    this.ai_chat_service.unlock_prompt();
+  start_loading(message?: string) {
+    this.ai_chat_service.start_loading(message);
   }
 
-  lock_prompt(): void {
-    this.ai_chat_service.lock_prompt();
+  end_loading(message?: string) {
+    this.ai_chat_service.end_loading(message);
+  }
+
+  give_context(context: string) {
+    this.ai_chat_service.give_context(context);
   }
 
   abstract run(data: T): Promise<string>
