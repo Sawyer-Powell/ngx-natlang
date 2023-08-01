@@ -37,6 +37,6 @@ export abstract class Action<T> {
     this.ai_chat_service.send_system_prompt(prompt);
   }
 
-  abstract run(data: T): Promise<string | undefined>
+  abstract run(data: T): Promise<string | void>
 }
 
