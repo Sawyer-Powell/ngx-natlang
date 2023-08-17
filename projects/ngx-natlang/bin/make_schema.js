@@ -6,7 +6,7 @@ const args = process.argv.slice(2);
 const tjsc = path.join('..', '..', '.bin', 'typescript-json-schema');
 const fs = require('fs');
 
-exec(`${path.resolve(__dirname, tjsc)} ${args[0]} * --required`, 
+exec(`${path.resolve(__dirname, tjsc)} ${args[0]} "*" --required`,
     (error, stdout, stderr) => {
 
     if (error) {

@@ -199,17 +199,15 @@ export class ChatHandler {
       }
     });
 
+
+    if(response.content != undefined) {
+      this.render_ai_message(response.content);
+      this.save_ai_message(response.content);
+    }
+
     if(action === undefined) { return; }
 
     if (
-      response !== undefined &&
-      response.content !== undefined
-    ) {
-      this.render_ai_message(response.content);
-      this.save_ai_message(response.content);
-    } else if (
-      action !== undefined &&
-      response !== undefined &&
       response.function_call !== undefined &&
       response.function_call.arguments !== undefined
     ) {
