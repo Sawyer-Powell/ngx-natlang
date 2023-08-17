@@ -1,6 +1,6 @@
 import {
   ChangeDetectorRef,
-  ViewContainerRef
+  ViewContainerRef,
 } from "@angular/core";
 
 import {
@@ -15,14 +15,11 @@ import {
   ChatCompletionResponseMessage
 } from 'openai/dist/api';
 
-import { PromptLock } from "./base.classes";
-
 import { Action } from "./action";
 
 export class ChatHandler {
   private chat_history: ChatCompletionRequestMessage[] = [];
   private action_objects: Action<any>[];
-  private prompt_lock: PromptLock = {locked: false};
 
   constructor(
     private ai_chat_service: ChatService,
@@ -30,13 +27,17 @@ export class ChatHandler {
     private ai_chat_window: ViewContainerRef,
     private human_message_component: any,
     private ai_message_component: any,
-    private get_ai_response: (
+    private get_ai_response: ((
       messages: ChatCompletionRequestMessage[],
       schemas: ChatCompletionFunctions[]
-    ) => Promise<ChatCompletionResponseMessage | undefined>,
+    ) => Promise<ChatCompletionResponseMessage | undefined>) | undefined,
     actions: Array<new (ai_chat_service: ChatService) => Action<any>> = [],
     private prepend?: boolean,
   ) {
+    if (!get_ai_response) {
+      throw Error("get_ai_response is undefined")
+    }
+
     if(this.ai_chat_window == undefined) {
       throw Error(
         `Chat window is undefined at the moment of ChatHandler initialization.\
@@ -76,13 +77,24 @@ export class ChatHandler {
     );
   }
 
+  async get_ai_response_safe(schemas: ChatCompletionFunctions[]): Promise<ChatCompletionRequestMessage | undefined> {
+    if (!this.get_ai_response) {
+      throw Error("get_ai_response is not defined")
+    }
+
+    return await this.get_ai_response(
+      this.chat_history,
+      schemas
+    )
+  }
+
   async system_prompt(content: string, with_response: boolean) {
     this.save_system_message(content);
 
     if(with_response) {
       this.ai_chat_service.start_loading();
-      let response = await this.get_ai_response(
-        this.chat_history,
+
+      let response = await this.get_ai_response_safe(
         []
       );
 
@@ -156,7 +168,9 @@ export class ChatHandler {
       schemas = [];
       this.action_objects.forEach(action => {
         if (action.schema) {
-          schemas.push(action.schema);
+          let schema = action.schema;
+          schema.description = action.description;
+          schemas.push(schema);
         }
       });
     }
@@ -168,13 +182,14 @@ export class ChatHandler {
 
     this.ai_chat_service.start_loading();
 
-    let response = await this.get_ai_response(
-      this.chat_history,
+    let response = await this.get_ai_response_safe(
       schemas
     );
 
     this.ai_chat_service.response_emitter.emit(response);
     this.ai_chat_service.end_loading();
+
+    if(response === undefined) { return; }
 
     let action = this.action_objects.find(x => {
       if (x.schema === undefined) {
@@ -184,8 +199,9 @@ export class ChatHandler {
       }
     });
 
+    if(action === undefined) { return; }
+
     if (
-      action === undefined &&
       response !== undefined &&
       response.content !== undefined
     ) {

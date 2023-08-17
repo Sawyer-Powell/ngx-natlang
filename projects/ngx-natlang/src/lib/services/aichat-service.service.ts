@@ -3,12 +3,12 @@ import { ChatCompletionFunctions, ChatCompletionRequestMessage, ChatCompletionRe
 import { await_event_emitter } from '../base.classes';
 
 export type ComponentCreate = {
-    component: any,
-    inputs?: {
-        name: string,
-        value: any,
-    }[],
-    index?: number
+  component: any,
+  inputs?: {
+    name: string,
+    value: any,
+  }[],
+  index?: number
 }
 
 export type PromptLockUpdate = {
@@ -69,16 +69,16 @@ export class ChatService {
 
   async get_history() {
     let history_promise = await_event_emitter(this.history_emitter);
-    this.general_emitter.emit({message: 'get_history'});
+    this.general_emitter.emit({ message: 'get_history' });
     let history = await history_promise;
     return history
   }
 
   clear_history() {
-    this.general_emitter.emit({message: 'clear_history'});
+    this.general_emitter.emit({ message: 'clear_history' });
   }
 
-  get_response(
+  send_prompt(
     prompt: string,
     schema?: ChatCompletionFunctions[]
   ): Promise<ChatCompletionResponseMessage> {
