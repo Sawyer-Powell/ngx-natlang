@@ -21,6 +21,7 @@ projects/ngx-natlang/node_modules
 *.launch
 .settings/
 *.sublime-workspace
+spux.yml
 
 # Visual Studio Code
 .vscode/*
