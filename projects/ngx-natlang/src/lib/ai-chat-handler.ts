@@ -45,26 +45,26 @@ export class ChatHandler {
       )
     }
 
-    ai_chat_service.component_emitter.subscribe((component) => {
+    ai_chat_service.emitters.component.subscribe((component) => {
       this.render_component(component);
     });
 
-    ai_chat_service.prompt_emitter.subscribe((prompt) => {
+    ai_chat_service.emitters.prompt.subscribe((prompt) => {
       this.process_prompt(prompt);
     });
 
-    ai_chat_service.give_context_emitter.subscribe((context) => {
+    ai_chat_service.emitters.context.subscribe((context) => {
       this.system_prompt(context, false);
     })
 
-    ai_chat_service.system_prompt_emitter.subscribe((prompt) => {
+    ai_chat_service.emitters.system_prompt.subscribe((prompt) => {
       this.system_prompt(prompt, true)
     })
 
-    ai_chat_service.general_emitter.subscribe((message) => {
+    ai_chat_service.emitters.general.subscribe((message) => {
       switch (message.message) {
         case 'get_history':
-          ai_chat_service.history_emitter.emit(this.chat_history)
+          ai_chat_service.emitters.history.emit(this.chat_history)
           break;
         case 'clear_history':
           this.clear_history()
@@ -98,7 +98,7 @@ export class ChatHandler {
         []
       );
 
-      this.ai_chat_service.response_emitter.emit(response);
+      this.ai_chat_service.emitters.response.emit(response);
       this.ai_chat_service.end_loading();
 
       if (response && response.content) {
@@ -186,7 +186,7 @@ export class ChatHandler {
       schemas
     );
 
-    this.ai_chat_service.response_emitter.emit(response);
+    this.ai_chat_service.emitters.response.emit(response);
     this.ai_chat_service.end_loading();
 
     if(response === undefined) { return; }
