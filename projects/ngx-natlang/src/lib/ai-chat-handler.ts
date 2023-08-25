@@ -63,6 +63,14 @@ export class ChatHandler {
       this.system_prompt(prompt, true)
     })
 
+    ai_chat_service.emitters.render_ai_message.subscribe((content) => {
+      this.render_ai_message(content);
+    })
+
+    ai_chat_service.emitters.render_user_message.subscribe((content) => {
+      this.render_human_message(content);
+    })
+
     ai_chat_service.emitters.general.subscribe((message) => {
       switch (message.message) {
         case 'get_history':

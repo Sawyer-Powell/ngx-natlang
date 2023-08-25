@@ -56,6 +56,20 @@ export abstract class Action<T> {
   }
 
   /**
+    * Renders a user component to this module's aiChat component
+  */
+  render_user_component(content: string) {
+    this.ai_chat_service.render_user_message(content);
+  }
+
+  /**
+    * Renders an ai component to this module's aiChat component
+  */
+  render_ai_component(content: string) {
+    this.ai_chat_service.render_ai_message(content);
+  }
+
+  /**
     * Executes the run() method of another action with the provided data
     */
   run_action(

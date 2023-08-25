@@ -45,6 +45,8 @@ export class ChatService {
     system_prompt: new EventEmitter(),
     loading_start: new EventEmitter(),
     loading_end: new EventEmitter(),
+    render_user_message: new EventEmitter(),
+    render_ai_message: new EventEmitter()
   }
 
   /**
@@ -55,6 +57,20 @@ export class ChatService {
   */
   render(component: ComponentCreate) {
     this.emitters.component.emit(component);
+  }
+
+  /**
+    * Renders a user message component to this module's aiChat component
+  */
+  render_user_message(content: string) {
+    this.emitters.render_user_message.emit(content);
+  }
+
+  /**
+    * Renders an ai message component to this module's aiChat component
+  */
+  render_ai_message(content: string) {
+    this.emitters.render_ai_message.emit(content);
   }
 
   /**
