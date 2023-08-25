@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { AfterViewInit, ChangeDetectorRef, Directive, Input } from '@angular/core';
 import { ViewContainerRef } from '@angular/core';
 import { ChatCompletionFunctions, ChatCompletionRequestMessage, ChatCompletionResponseMessage } from 'openai/api';
@@ -13,6 +14,7 @@ export class AiChatDirective implements AfterViewInit {
   options: AiOptions = {}
 
   constructor(
+    private http: HttpClient,
     private viewContainer: ViewContainerRef,
     private aiChatService: ChatService,
     private changeDetector: ChangeDetectorRef
@@ -22,6 +24,7 @@ export class AiChatDirective implements AfterViewInit {
     validateAIOptions(this.options);
     new ChatHandler(
       this.aiChatService,
+      this.http,
       this.changeDetector,
       this.viewContainer,
       this.options.userMessageComponent,
@@ -61,7 +64,7 @@ export type AiOptions = {
     messages: ChatCompletionRequestMessage[],
     schemas: ChatCompletionFunctions[]
   ) => Promise<ChatCompletionResponseMessage | undefined>,
-  actions?: Array<new (ai_chat_service: ChatService) => Action<any>>,
+  actions?: Array<new (ai_chat_service: ChatService, http: HttpClient) => Action<any>>,
   prepend?: boolean
 }
 

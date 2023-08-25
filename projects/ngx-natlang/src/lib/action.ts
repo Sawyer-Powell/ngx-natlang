@@ -3,6 +3,7 @@ import {
   ComponentCreate
 } from "./services/aichat-service.service";
 import { ChatCompletionFunctions } from 'openai/dist/api';
+import { HttpClient } from "@angular/common/http";
 
 export abstract class Action<T> {
   /**
@@ -24,8 +25,28 @@ export abstract class Action<T> {
   abstract schema: ChatCompletionFunctions | undefined;
 
   constructor(
-    private ai_chat_service: ChatService
+    private ai_chat_service: ChatService,
+    private http: HttpClient
   ) { }
+
+  /**
+    * Makes a POST request using Angular's HttpClient object
+  */
+  http_post(
+    url: string,
+    body: any,
+  ) {
+    return this.http.post(url, body)
+  }
+
+  /**
+    * Makes a GET request using Angular's HttpClient object
+  */
+  http_get(
+    url: string,
+  ) {
+    return this.http.get(url)
+  }
 
   /**
     * Renders a component to the aiChat component in this module

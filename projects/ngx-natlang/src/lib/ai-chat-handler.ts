@@ -16,6 +16,7 @@ import {
 } from 'openai/dist/api';
 
 import { Action } from "./action";
+import { HttpClient } from "@angular/common/http";
 
 export class ChatHandler {
   private chat_history: ChatCompletionRequestMessage[] = [];
@@ -23,6 +24,7 @@ export class ChatHandler {
 
   constructor(
     private ai_chat_service: ChatService,
+    private http: HttpClient,
     private cdr: ChangeDetectorRef,
     private ai_chat_window: ViewContainerRef,
     private human_message_component: any,
@@ -31,7 +33,7 @@ export class ChatHandler {
       messages: ChatCompletionRequestMessage[],
       schemas: ChatCompletionFunctions[]
     ) => Promise<ChatCompletionResponseMessage | undefined>) | undefined,
-    actions: Array<new (ai_chat_service: ChatService) => Action<any>> = [],
+    actions: Array<new (ai_chat_service: ChatService, http: HttpClient) => Action<any>> = [],
     private prepend?: boolean,
   ) {
     if (!get_ai_response) {
@@ -73,7 +75,7 @@ export class ChatHandler {
     })
 
     this.action_objects = actions.map(
-      action => (new action(this.ai_chat_service))
+      action => (new action(this.ai_chat_service, this.http))
     );
   }
 
@@ -198,7 +200,6 @@ export class ChatHandler {
         return x.schema.name === response?.function_call?.name;
       }
     });
-
 
     if(response.content != undefined) {
       this.render_ai_message(response.content);
