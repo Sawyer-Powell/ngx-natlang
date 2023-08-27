@@ -17,7 +17,7 @@ npm i ngx-natural-language
 OpenAI provides a fantastic tool for getting structured data out of their
 GPT-3.5 and GPT-4 models called [function calling](https://openai.com/blog/function-calling-and-other-api-updates).
 
-This provides us an amazing opportunity to integrate LLM based computing
+This gives us an amazing opportunity to integrate LLM based computing
 with traditional computing, allowing us to control applications through the
 interface of natural language.
 
