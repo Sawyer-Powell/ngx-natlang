@@ -2,6 +2,8 @@
 
 **Build production ready embedded AI chat experiences with Angular and OpenAI**
 
+![demo screenshot](https://i.imgur.com/T9QYjWg.png)
+
 ### Installation
 
 In your Angular 16 (or greater) project, run:
@@ -10,9 +12,28 @@ In your Angular 16 (or greater) project, run:
 npm i ngx-natural-language
 ```
 
-### Quickstart
+### The Basics
 
-Create a new component to manage the AI chat window 
+OpenAI provides a fantastic tool for getting structured data out of their
+GPT-3.5 and GPT-4 models called [function calling](https://openai.com/blog/function-calling-and-other-api-updates).
+
+This provides us an amazing opportunity to integrate LLM based computing
+with traditional computing, allowing us to control applications through the
+interface of natural language.
+
+`ngx-natural-language` is my attempt at making controlling a web-application
+with natural language as straightforward, expressible, and maintainable as
+possible. **This framework is still in beta**, but provides excellent tools
+to quickly iterate and develop a superpowered AI chat in your Angular app.
+
+#### Fundamental concepts
+
+**The aiChat directive**
+
+By importing the `AiChatModule` into `app.module.ts`, the components in that
+module get access to the `aiChat` directive. By applying this directive in
+a template, the DOM element it is attached to becomes a window where
+AI messages and user messages are rendered to. 
 
 `chat.component.html`
 ```html
@@ -47,70 +68,16 @@ export class ChatComponent {
 }
 ```
 
-Create the components that will represent the user message, and ai message
-in our chat window.
+Notice that we pass an **`AiOptions`** object into our `aiChat` element. Let's break
+down its contents.
+1. `userMesssageComponent`
+  - Component used to render messages from the user in the `aiChat`.
+2. `aiMessageComponent`
+  - Component used to render messages from the ai in the `aiChat`
+3. `getAiResponse`
+  - Method for sending requests to OpenAi (for security reasons this must be
+  implemented by the user to prevent an application frontend from directly
+  interfacing with OpenAi)
+4. `actions`
+  - A list of `Actions` available to the AI.
 
-```typescript
-@Component({
-  selector: 'app-user-message',
-  template: `
-  <div>
-    <h2>User Message</h2>
-    {{content}}
-  </div>
-  `
-})
-class UserMessageComponent {
-  @Input() content: string = "Lorem Ipsum"
-}
-
-@Component({
-  selector: 'app-ai-message',
-  template: `
-  <div>
-    <h2>AI Message</h2>
-    {{content}}
-  </div>
-  `
-})
-class AiMessageComponent {
-  @Input() content: string = "Lorem Ipsum"
-}
-```
-
-Create the function for querying OpenAI. This is not provided by default in
-ngx-natlang due to security concerns of making requests directly in the
-frontend of the application. Here is one implemented in the frontend using
-the [openai npm package](https://www.npmjs.com/package/openai) for 
-demonstration purposes.
-
-```typescript
-export async function get_ai_response(
-  messages: ChatCompletionRequestMessage[],
-  schemas: ChatCompletionFunctions[]
-): Promise<ChatCompletionResponseMessage | undefined> {
-
-  const configuration = new Configuration({
-    apiKey: "your api key goes here :)"
-  });
-
-  const openai = new OpenAIApi(configuration);
-
-  const response = await openai.createChatCompletion({
-    model: "gpt-4-0613",
-
-    messages: [
-      {
-        role: "system",
-        content: "Don't make assumptions about what values to plug into functions. You must ask for clarification if a user request is ambiguous."
-      },
-      ...messages
-    ],
-    functions: schemas.length == 0 ? undefined : schemas,
-  });
-
-  return response.data.choices[0].message;
-}
-```
-
-Provide an `Action` for getting weather data.
