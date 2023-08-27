@@ -1,8 +1,6 @@
 # NgxNatlang
 
-## Build production ready embedded AI chat experiences with Angular and OpenAI
-
-![example-site](https://i.imgur.com/6i5lCAl.png)
+**Build production ready embedded AI chat experiences with Angular and OpenAI**
 
 ### Installation
 
