@@ -70,14 +70,18 @@ export class ChatComponent {
 
 Notice that we pass an **`AiOptions`** object into our `aiChat` element. Let's break
 down its contents.
-1. `userMesssageComponent`
-  - Component used to render messages from the user in the `aiChat`.
-2. `aiMessageComponent`
-  - Component used to render messages from the ai in the `aiChat`
-3. `getAiResponse`
-  - Method for sending requests to OpenAi (for security reasons this must be
-  implemented by the user to prevent an application frontend from directly
-  interfacing with OpenAi)
-4. `actions`
-  - A list of `Actions` available to the AI.
+
+`userMesssageComponent`
+- Component used to render messages from the user in the `aiChat`.
+
+`aiMessageComponent`
+- Component used to render messages from the ai in the `aiChat`
+
+`getAiResponse`
+- Method for sending requests to OpenAi (for security reasons this must be
+implemented by the user to prevent an application frontend from directly
+interfacing with OpenAi)
+
+`actions`
+- A list of `Actions` available to the AI.
 
