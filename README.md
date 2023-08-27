@@ -4,7 +4,7 @@
 
 ![demo screenshot](https://i.imgur.com/T9QYjWg.png)
 
-### Installation
+## Installation
 
 In your Angular 16 (or greater) project, run:
 
@@ -12,7 +12,7 @@ In your Angular 16 (or greater) project, run:
 npm i ngx-natural-language
 ```
 
-### The Basics
+## The Basics
 
 OpenAI provides a fantastic tool for getting structured data out of their
 GPT-3.5 and GPT-4 models called [function calling](https://openai.com/blog/function-calling-and-other-api-updates).
@@ -26,9 +26,9 @@ with natural language as straightforward, expressible, and maintainable as
 possible. **This framework is still in beta**, but provides excellent tools
 to quickly iterate and develop a superpowered AI chat in your Angular app.
 
-#### Fundamental concepts
+## Fundamental concepts
 
-**The aiChat directive**
+### The aiChat directive
 
 By importing the `AiChatModule` into `app.module.ts`, the components in that
 module get access to the `aiChat` directive. By applying this directive in
